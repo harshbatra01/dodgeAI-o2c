@@ -8,7 +8,6 @@ and mounts API routers from the graph and chat modules.
 from __future__ import annotations
 
 import logging
-import os
 from contextlib import asynccontextmanager
 from pathlib import Path
 from fastapi import FastAPI, HTTPException
@@ -47,13 +46,9 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-cors_origins = [origin.strip() for origin in os.getenv("ALLOWED_ORIGINS", "*").split(",") if origin.strip()]
-if not cors_origins:
-    cors_origins = ["*"]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=cors_origins,
+    allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"],
 )

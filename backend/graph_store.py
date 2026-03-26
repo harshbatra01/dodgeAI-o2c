@@ -15,7 +15,11 @@ from typing import Any
 
 import networkx as nx
 import numpy as np
-from sentence_transformers import SentenceTransformer
+
+try:
+    from sentence_transformers import SentenceTransformer
+except Exception:  # pragma: no cover - optional dependency for deployment
+    SentenceTransformer = None
 
 class GraphStore:
     def __init__(self, filepath: Path | str):
@@ -25,12 +29,13 @@ class GraphStore:
         self._undirected_graph = self.G.to_undirected()
         self._lexical_tokens: set[str] = set()
         self._lexical_tokens_by_type: dict[str, set[str]] = defaultdict(set)
-        self._embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
+        self._embedding_model = SentenceTransformer("all-MiniLM-L6-v2") if SentenceTransformer else None
         self._semantic_node_ids: list[str] = []
         self._semantic_embeddings = np.empty((0, 0), dtype=np.float32)
         self._graph_analysis: dict[str, Any] = {}
         self._build_lexical_index()
-        self._build_semantic_index()
+        if self._embedding_model:
+            self._build_semantic_index()
         self._build_graph_analysis()
 
     def _load_graph(self, path: Path) -> nx.DiGraph:
@@ -151,7 +156,7 @@ class GraphStore:
 
     def semantic_search_nodes(self, query: str, limit: int = 10) -> list[dict[str, Any]]:
         """Find nodes whose embedding is most similar to the query embedding."""
-        if not query.strip() or self._semantic_embeddings.size == 0:
+        if not query.strip() or self._semantic_embeddings.size == 0 or self._embedding_model is None:
             return []
 
         query_embedding = self._embedding_model.encode(
@@ -310,6 +315,8 @@ class GraphStore:
 
     def _build_semantic_index(self) -> None:
         """Generate a normalized embedding for each node at startup."""
+        if self._embedding_model is None:
+            return
         node_ids: list[str] = []
         corpus: list[str] = []
 
