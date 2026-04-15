@@ -1,7 +1,7 @@
 # DodgeAI O2C — LLM-Powered Graph Query System
 
-**Live Demo:** [<FRONTEND_URL>  ](https://dodge-ai-o2c.vercel.app/)
-**Backend URL:** [<Backend URL>  ](https://dodgeai-o2c.onrender.com)
+**Live Demo:** https://dodge-ai-o2c.vercel.app/
+**Backend URL:** https://dodgeai-o2c.onrender.com
 
 
 **Repo:** https://github.com/harshbatra01/dodgeAI-o2c  
